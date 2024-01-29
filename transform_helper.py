@@ -405,6 +405,120 @@ class StockPrice_shiftedMean_Helper():
         return fig, axs
 
 
+class StockPrice_drift_Helper():
+    def __init__(self, **params):
+        # Random number generator
+        rng = np.random.RandomState(42)
+        self.rng = rng
+        
+        return
+
+    def gen_prices(self, return_mean, return_std, drift=.001, level_init=10, num_returns=30):
+        """
+        Generate a price series where the prices drift via an additive constant daily return amount (drift)
+
+        Parameters
+        ----------
+        return_mean: Scalar.  Average daily return EXCLUDING drift
+        return_std:  Scalar.  Standard deviation of daily returns
+
+        The "de-meaned" returns have mean return_mean and std dev. return_std
+
+        drift:       Scalar,  Constant return added to the daily return
+
+        The final returns have mean (drift + return_mean) and std dev. return_std
+        level_init:  Scalar, the initial Price
+
+        Prices are derived by computing cumulative returns and multiplying by level_init
+
+        Returns
+        -------
+        DataFrame with colums "Level", "Return" for price levels and returns
+        """
+
+        # Generate de-meaned returns
+        rng = self.rng
+        
+        # Generate returns from normal distribution with mean return_mean and std deviation return_std
+        rets =  (return_mean + drift) + rng.normal(size=num_returns) * return_std
+
+        # Cumulative returns
+        cum_rets = np.cumprod(1 + rets)
+
+        # Cumulative returns to prices
+        levels = level_init * cum_rets
+        
+        return pd.DataFrame( list(zip(levels, rets)), columns=[ "Level", "Return" ]) 
+
+    def plot_data(self, df, fig=None, axs=None, visible=True):
+        """
+        Convenience method to plot the DataFrame with levels and returns
+
+        Parameters
+        ----------
+        DataFrame with columns "Level", "Return"
+
+        Returns
+        -------
+        fig, axs: Matplot lib plot
+        """
+
+        if axs is None:
+            fig, axs = plt.subplots(1,2, figsize=(12,6) )
+
+        axs[0].plot( df["Level"])
+        axs[0].set_title("Level")
+        axs[0].set_xlabel("Time")
+        axs[0].set_ylabel("Price")
+        
+        axs[1].plot( df["Return"])
+        axs[1].set_title("Return")
+        axs[1].set_xlabel("Time")
+        axs[1].set_ylabel("Return")
+
+
+        if not visible:
+            plt.close(fig)
+
+        return fig, axs
+
+    def plot_rolling(self, df, window=10, fig=None, axs=None, visible=True):
+        """
+        Convenience method to plot the rolling mean of the DataFrame with levels and returns
+
+        Parameters
+        ----------
+        DataFrame with columns "Level", "Return"
+
+        Returns
+        -------
+        fig, axs: Matplot lib plot
+        """
+
+        if axs is None:
+            fig, axs = plt.subplots(1,2, figsize=(12,6) )
+
+        rolling_df = df.rolling(window)
+
+        rolling_mean_df = rolling_df.mean()
+        rolling_std_df  = rolling_df.std()
+        
+        axs[0].plot( rolling_mean_df["Level"])
+        axs[0].set_title("Rolling mean: Level")
+        axs[0].set_xlabel("Time")
+        axs[0].set_ylabel("Price")
+        
+        axs[1].plot( rolling_mean_df["Return"])
+        axs[1].set_title("Rolling mean: Return")
+        axs[1].set_xlabel("Time")
+        axs[1].set_ylabel("Return")
+
+
+        if not visible:
+            plt.close(fig)
+
+        return fig, axs
+
 
 class StockReturn_Pooling_Helper():
     def __init__(self, **params):
