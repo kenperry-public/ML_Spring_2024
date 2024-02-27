@@ -344,8 +344,18 @@ class VanderPlas():
                       title='principal components',
                       # xlim=(-5, 5), ylim=(-3, 3.1)
                      )
-        _= ax[1].set_xlabel("$\\tilde{x}_1$")
-        _= ax[1].set_ylabel("$\\tilde{x}_2$")
+
+        if whiten:
+            # Co-ordinates are "standardized" u
+            x1_label = "${u}_1$"
+            x2_label = "${u}_2$"
+        else:
+            # Co-ordinates are un-standardized x
+            x1_label = "$\\tilde{x}_1$"
+            x2_label = "$\\tilde{x}_2$"
+            
+        _= ax[1].set_xlabel(x1_label)
+        _= ax[1].set_ylabel(x2_label)
 
 
         # Map a few specific points
