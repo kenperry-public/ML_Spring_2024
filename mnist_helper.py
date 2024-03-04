@@ -91,7 +91,7 @@ class MNIST_Helper():
         self.X_train, self.y_train, self.X_test, self.y_test, self.scaler = \
         X_train, y_train, X_test, y_test, scaler
 
-    def visualize(self, X=None, y=None, save_file=None):
+    def visualize(self, X=None, y=None, save_file=None, title=None):
         """
         Plot a subset of the digits given by X
 
@@ -118,6 +118,10 @@ class MNIST_Helper():
 
             _ = plt.imshow(img, cmap="gray")
 
+        # Add title
+        if title is not None:
+            _= fig.suptitle(title)
+            
         # Save image in file
         if save_file is not None:
             fig.savefig(save_file)
