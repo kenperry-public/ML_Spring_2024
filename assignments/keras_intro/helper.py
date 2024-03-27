@@ -17,9 +17,9 @@ import json
 import pdb
 
 class Helper():
-  def __init__(self):
+  def __init__(self, data_dir= "./Data"):
     # Data directory
-    self.DATA_DIR = "./Data"
+    self.DATA_DIR =data_dir
 
     if not os.path.isdir(self.DATA_DIR):
         self.DATA_DIR = "../resource/asnlib/publicdata/ships_in_satellite_images/data"
